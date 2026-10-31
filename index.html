@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somiti Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --primary: #0d4aa8;
+            --primary-light: #e8f0fe;
+            --cyan: #00bcd4;
+            --orange: #ff9800;
+            --green: #4caf50;
+            --red: #f44336;
+            --pink: #e91e63;
+            --blue: #2196f3;
+            --gray: #6c757d;
+            --light-gray: #f8f9fa;
+            --border: #dee2e6;
+            --text: #212529;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --sidebar-width: 260px;
+            --topbar-height: 60px;
+            --font-primary: 'Inter', 'Poppins', sans-serif;
+            --font-bengali: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--light-gray);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        body.bengali-mode {
+            font-family: var(--font-bengali);
+        }
+
+        /* ===== LAYOUT ===== */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .sidebar-user-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .sidebar-user-info p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .sidebar-menu {
+            padding: 10px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .menu-item:hover {
+            background: var(--light-gray);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .menu-item .chevron {
+            transition: transform 0.3s;
+        }
+
+        .menu-item.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            display: none;
+            background: var(--light-gray);
+        }
+
+        .submenu.show {
+            display: block;
+        }
+
+        .submenu-item {
+            padding: 10px 20px 10px 40px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .submenu-item:hover {
+            background: var(--primary-light);
+        }
+
+        .submenu-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 10px 0;
+        }
+
+        /* ===== TOPBAR ===== */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--topbar-height);
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 999;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .topbar-search {
+            padding: 8px 15px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 250px;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-cyan {
+            background: var(--cyan);
+            color: var(--white);
+        }
+
+        .btn-orange {
+            background: var(--orange);
+            color: var(--white);
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: var(--white);
+        }
+
+        .btn-red {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 20px;
+            min-height: calc(100vh - var(--topbar-height));
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* ===== GRID LAYOUTS ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .grid-6 {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+        }
+
+        /* ===== STAT TILES ===== */
+        .stat-tile {
+            background: var(--white);
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-tile.cyan { border-color: var(--cyan); }
+        .stat-tile.orange { border-color: var(--orange); }
+        .stat-tile.red { border-color: var(--red); }
+        .stat-tile.green { border-color: var(--green); }
+        .stat-tile.pink { border-color: var(--pink); }
+        .stat-tile.blue { border-color: var(--blue); }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* ===== TABLES ===== */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: var(--light-gray);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        table tr:hover {
+            background: var(--light-gray);
+        }
+
+        table tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        /* ===== FORMS ===== */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-light);
+            background: none;
+            border: none;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--green);
+            color: var(--white);
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 3000;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== AVATARS ===== */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .avatar-sm {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+        }
+
+        .avatar-lg {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-cyan { background: var(--cyan); color: var(--white); }
+        .badge-green { background: var(--green); color: var(--white); }
+        .badge-orange { background: var(--orange); color: var(--white); }
+        .badge-red { background: var(--red); color: var(--white); }
+
+        /* ===== TRANSACTION ITEMS ===== */
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .transaction-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .transaction-dot.credit { background: var(--green); }
+        .transaction-dot.debit { background: var(--red); }
+
+        /* ===== FLOATING BUTTON ===== */
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--green);
+            color: var(--white);
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1500;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .topbar {
+                left: 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .grid-3, .grid-6 {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-2, .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            .sidebar, .topbar, .floating-btn, .btn {
+                display: none !important;
+            }
+
+            .main-content {
+                margin: 0;
+                padding: 10px;
+            }
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-10 { margin-top: 10px; }
+        .mt-20 { margin-top: 20px; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-20 { margin-bottom: 20px; }
+        .flex { display: flex; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .gap-10 { gap: 10px; }
+        .gap-20 { gap: 20px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-avatar">RI</div>
+                <div class="sidebar-user-info">
+                    <h3 data-en="Riyad Islam" data-bn="রিয়াদ ইসলাম">Riyad Islam</h3>
+                    <p data-en="Your Profile" data-bn="আপনার প্রোফাইল">Your Profile</p>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard" data-en="Dashboard" data-bn="ড্যাশবোর্ড">Dashboard</div>
+                
+                <div class="menu-item has-submenu" data-en="User" data-bn="ব্যবহারকারী">
+                    <span>User</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="submenu" data-parent="user">
+                    <div class="submenu-item" data-page="new-user" data-en="New User (Add)" data-bn="নতুন ব্যবহারকারী">New User (Add)</div>
+                    <div class="submenu-item" data-page="user-list" data-en="User List" data-bn="ব্যবহারকারী তালিকা">User List</div>
+                </div>
+
+                <div class="menu-item has-submenu" data-en="Customer" data-bn="গ্রাহক">
+                    <span>Customer</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="submenu" data-parent="customer">
+                    <div class="submenu-item" data-page="area" data-en="Area" data-bn="এলাকা">Area</div>
+                    <div class="submenu-item" data-page="new-customer" data-en="Add New" data-bn="নতুন যোগ করুন">Add New</div>
+                    <div class="submenu-item" data-page="customer-list" data-en="Customer List" data-bn="গ্রাহক তালিকা">Customer List</div>
+                    <div class="submenu-item" data-page="customer-ledger" data-en="Customer Ledger" data-bn="গ্রাহক খাতা">Customer Ledger</div>
+                </div>
+
+                <div class="menu-item has-submenu" data-en="Reports" data-bn="রিপোর্ট">
+                    <span>Reports</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="submenu" data-parent="reports">
+                    <div class="submenu-item" data-page="reports" data-en="Reports Hub" data-bn="রিপোর্ট হাব">Reports Hub</div>
+                    <div class="submenu-item" data-page="settlement-reports" data-en="Settlement Reports" data-bn="নিষ্পত্তি রিপোর্ট">Settlement Reports</div>
+                    <div class="submenu-item" data-page="collection-reports" data-en="Collection Reports" data-bn="সংগ্রহ রিপোর্ট">Collection Reports</div>
+                </div>
+
+                <div class="menu-item has-submenu" data-en="Accounts" data-bn="হিসাব">
+                    <span>Accounts</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="submenu" data-parent="accounts">
+                    <div class="submenu-item" data-page="share" data-en="Share" data-bn="শেয়ার">Share</div>
+                    <div class="submenu-item" data-page="savings" data-en="Savings" data-bn="সঞ্চয়">Savings</div>
+                    <div class="submenu-item" data-page="fixed-deposit" data-en="Fixed Deposit" data-bn="ফিক্সড ডিপোজিট">Fixed Deposit</div>
+                    <div class="submenu-item" data-page="dps" data-en="DPS" data-bn="ডিপিএস">DPS</div>
+                    <div class="submenu-item" data-page="loan" data-en="Loan" data-bn="ঋণ">Loan</div>
+                    <div class="submenu-item" data-page="insurance" data-en="Insurance" data-bn="বীমা">Insurance</div>
+                </div>
+
+                <div class="menu-item" data-page="banking" data-en="Banking" data-bn="ব্যাংকিং">Banking</div>
+                <div class="menu-item" data-page="income-expense" data-en="Income & Expense" data-bn="আয় ও ব্যয়">Income & Expense</div>
+                <div class="menu-item" data-page="employee-salary" data-en="Employee Salary" data-bn="কর্মচারী বেতন">Employee Salary</div>
+                <div class="menu-item" data-page="profit-distribution" data-en="Profit Distribution" data-bn="লাভ বণ্টন">Profit Distribution</div>
+
+                <div class="menu-divider"></div>
+
+                <div class="menu-item" data-page="restore" data-en="Restore" data-bn="পুনরুদ্ধার">Restore</div>
+                <div class="menu-item" data-page="factory-reset" data-en="Factory Reset" data-bn="ফ্যাক্টরি রিসেট">Factory Reset</div>
+
+                <div class="menu-item has-submenu" data-en="Settings" data-bn="সেটিংস">
+                    <span>Settings</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="submenu" data-parent="settings">
+                    <div class="submenu-item" data-page="settings" data-en="General" data-bn="সাধারণ">General</div>
+                </div>
+
+                <div class="menu-item has-submenu" data-en="Package" data-bn="প্যাকেজ">
+                    <span>Package</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="submenu" data-parent="package">
+                    <div class="submenu-item" data-page="package" data-en="View Package" data-bn="প্যাকেজ দেখুন">View Package</div>
+                </div>
+
+                <div class="menu-item has-submenu" data-en="Contract" data-bn="চুক্তি">
+                    <span>Contract</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="submenu" data-parent="contract">
+                    <div class="submenu-item" data-page="contract" data-en="View Contract" data-bn="চুক্তি দেখুন">View Contract</div>
+                </div>
+
+                <div class="menu-divider"></div>
+
+                <div class="menu-item" data-page="training-video" data-en="Training Video" data-bn="প্রশিক্ষণ ভিডিও">Training Video</div>
+                <div class="menu-item" data-page="help-center" data-en="Help Center" data-bn="সাহায্য কেন্দ্র">Help Center</div>
+                <div class="menu-item" data-page="logout" data-en="Log Out" data-bn="লগ আউট">Log Out</div>
+            </nav>
+        </aside>
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="hamburger" id="hamburger">☰</div>
+                <h1 class="page-title" id="pageTitle" data-en="Dashboard" data-bn="ড্যাশবোর্ড">Dashboard</h1>
+                <input type="text" class="topbar-search" id="topbarSearch" placeholder="Search Customer" style="display:none;">
+            </div>
+            <div class="topbar-right">
+                <div style="position: relative;">
+                    <button class="btn btn-primary" id="addBtn" onclick="toggleAddDropdown()">+ Add</button>
+                    <div id="addDropdown" style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid var(--border); border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 180px; z-index: 1001; margin-top: 5px;">
+                        <div style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid var(--border);" onclick="navigateTo('new-customer'); toggleAddDropdown();">New Customer</div>
+                        <div style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid var(--border);" onclick="navigateTo('new-user'); toggleAddDropdown();">New User</div>
+                        <div style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid var(--border);" onclick="navigateTo('loan-new'); toggleAddDropdown();">New Loan</div>
+                        <div style="padding: 10px 15px; cursor: pointer;" onclick="navigateTo('share-new'); toggleAddDropdown();">New Share</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content" id="mainContent">
+            <!-- Pages will be rendered here -->
+        </main>
+    </div>
+
+    <!-- FLOATING LANGUAGE BUTTON -->
+    <button class="floating-btn" id="langToggle">Change Language</button>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Modal</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA STORE =====
+        const store = {
+            users: [
+                { id: 1, nameEn: 'Riyad Islam', nameBn: 'রিয়াদ ইসলাম', role: 'Admin', mobile: '01712345678', joiningDate: '2023-01-15', password: '1234', investment: 500000 },
+                { id: 2, nameEn: 'Karim Hossain', nameBn: 'করিম হোসেন', role: 'Investor', mobile: '01823456789', joiningDate: '2023-02-20', password: '1234', investment: 300000 },
+                { id: 3, nameEn: 'Fatema Akter', nameBn: 'ফাতেমা আক্তার', role: 'Manager', mobile: '01934567890', joiningDate: '2023-03-10', password: '1234' },
+                { id: 4, nameEn: 'Rahim Uddin', nameBn: 'রহিম উদ্দিন', role: 'Manager', mobile: '01645678901', joiningDate: '2023-04-05', password: '1234' },
+                { id: 5, nameEn: 'Ayesha Siddika', nameBn: 'আয়েশা সিদ্দিকা', role: 'Field Worker', mobile: '01756789012', joiningDate: '2023-05-12', password: '1234', area: 'Gulshan - 01' },
+                { id: 6, nameEn: 'Nusrat Jahan', nameBn: 'নুসরাত জাহান', role: 'Field Worker', mobile: '01867890123', joiningDate: '2023-06-18', password: '1234', area: 'Gulshan - 02' },
+                { id: 7, nameEn: 'Mehedi Hasan', nameBn: 'মেহেদী হাসান', role: 'Field Worker', mobile: '01978901234', joiningDate: '2023-07-22', password: '1234', area: 'Gulshan - 01' },
+                { id: 8, nameEn: 'Sumaiya Islam', nameBn: 'সুমাইয়া ইসলাম', role: 'Investor', mobile: '01689012345', joiningDate: '2023-08-30', password: '1234', investment: 200000 },
+                { id: 9, nameEn: 'Tanvir Ahmed', nameBn: 'তানভীর আহমেদ', role: 'Investor', mobile: '01790123456', joiningDate: '2023-09-14', password: '1234', investment: 150000 },
+                { id: 10, nameEn: 'Shahnaz Parvin', nameBn: 'শাহনাজ পারভীন', role: 'Investor', mobile: '01801234567', joiningDate: '2023-10-25', password: '1234', investment: 250000 }
+            ],
+            areas: [
+                { id: 1, name: 'Gulshan - 01' },
+                { id: 2, name: 'Gulshan - 02' }
+            ],
+            customers: [],
+            shares: [],
+            savings: [],
+            fixedDeposits: [],
+            dps: [],
+            loans: [],
+            transactions: [],
+            package: {
+                name: 'Independent',
+                customerPermission: 500,
+                expiresOn: '2029-01-31',
+                smsCredit: 417
+            }
+        };
+
+        // Generate 53 dummy customers
+        const customerNames = [
+            'Abdul Mannan', 'Rashida Begum', 'Mohammad Ali', 'Fatema Khatun', 'Nurul Islam',
+            'Amina Akter', 'Kamal Hossain', 'Shabnam Ara', 'Jahangir Alam', 'Roksana Parvin',
+            'Siraj Uddin', 'Nasima Begum', 'Habibur Rahman', 'Tahmina Akter', 'Mofiz Uddin',
+            'Aleya Khatun', 'Gulam Rahman', 'Sufia Begum', 'Anwar Hossain', 'Momena Akter',
+            'Shahidul Islam', 'Rabeya Begum', 'Nurul Amin', 'Selina Akter', 'Abdul Malek',
+            'Jahanara Begum', 'Mokbul Hossain', 'Rina Akter', 'Shamsul Alam', 'Nurjahan Begum',
+            'Kazi Rahman', 'Hasina Akter', 'Omar Faruk', 'Sadia Islam', 'Rafiq Uddin',
+            'Parvin Akter', 'Solaiman Hossain', 'Rehana Begum', 'Masud Rana', 'Laila Akter',
+            'Aziz Rahman', 'Mst. Fatema', 'Hafiz Uddin', 'Beauty Akter', 'Zahirul Islam',
+            'Nargis Begum', 'Alamgir Hossain', 'Shahin Akter', 'Moniruzzaman', 'Ruma Akter',
+            'Kamrul Islam', 'Asia Begum', 'Firoz Ahmed'
+        ];
+
+        for (let i = 1; i <= 53; i++) {
+            store.customers.push({
+                id: i,
+                nameEn: customerNames[i - 1] || `Customer ${i}`,
+                nameBn: `গ্রাহক ${i}`,
+                mobile: `017${String(i).padStart(8, '0')}`,
+                area: i % 2 === 0 ? 'Gulshan - 01' : 'Gulshan - 02',
+                accountNo: `AC${String(1000 + i)}`,
+                registrationDate: '2024-01-15',
+                password: '1234',
+                admissionFee: 0,
+                father: `Father of ${customerNames[i - 1] || 'Customer ' + i}`,
+                mother: `Mother of ${customerNames[i - 1] || 'Customer ' + i}`,
+                dob: '1990-05-20',
+                gender: i % 3 === 0 ? 'Female' : 'Male',
+                profession: 'Business',
+                nid: `NID${String(100000 + i)}`,
+                email: `customer${i}@example.com`,
+                currentAddress: 'Dhaka, Bangladesh',
+                permanentAddress: 'Dhaka, Bangladesh'
+            });
+        }
+
+        // Generate sample transactions
+        const transactionTypes = [
+            { type: 'Loan (Full Settlement)', amount: 25000, isCredit: true },
+            { type: 'Loan (Installment Payment)', amount: 5000, isCredit: true },
+            { type: 'Savings (Deposit)', amount: 10000, isCredit: true },
+            { type: 'Savings (Withdrawal)', amount: 5000, isCredit: false },
+            { type: 'Savings (Profit)', amount: 1500, isCredit: true }
+        ];
+
+        for (let i = 0; i < 20; i++) {
+            const transType = transactionTypes[i % 5];
+            store.transactions.push({
+                id: i + 1,
+                customerId: (i % 53) + 1,
+                type: transType.type,
+                amount: transType.amount,
+                date: new Date(2025, 1, 16 - i).toISOString(),
+                isCredit: transType.isCredit,
+                approvedBy: store.users[i % 10].nameEn
+            });
+        }
+
+        // ===== ROUTER =====
+        let currentPage = 'dashboard';
+        let currentLang = 'en';
+
+        function navigateTo(page) {
+            window.location.hash = `#/${page}`;
+        }
+
+        function handleRoute() {
+            const hash = window.location.hash || '#/dashboard';
+            const page = hash.replace('#/', '') || 'dashboard';
+            currentPage = page;
+            renderPage(page);
+            updateActiveMenu(page);
+        }
+
+        window.addEventListener('hashchange', handleRoute);
+
+        // ===== RENDER FUNCTIONS =====
+        function renderPage(page) {
+            const mainContent = document.getElementById('mainContent');
+            const pageTitle = document.getElementById('pageTitle');
+            const topbarSearch = document.getElementById('topbarSearch');
+
+            // Reset
+            topbarSearch.style.display = 'none';
+
+            switch(page) {
+                case 'dashboard':
+                    pageTitle.textContent = currentLang === 'en' ? 'Dashboard' : 'ড্যাশবোর্ড';
+                    topbarSearch.style.display = 'block';
+                    mainContent.innerHTML = renderDashboard();
+                    break;
+                case 'reports':
+                    pageTitle.textContent = currentLang === 'en' ? 'Reports' : 'রিপোর্ট';
+                    mainContent.innerHTML = renderReports();
+                    break;
+                case 'settlement-reports':
+                    pageTitle.textContent = currentLang === 'en' ? 'Settlement Reports' : 'নিষ্পত্তি রিপোর্ট';
+                    mainContent.innerHTML = renderSettlementReports();
+                    break;
+                case 'collection-reports':
+                    pageTitle.textContent = currentLang === 'en' ? 'Collection Reports' : 'সংগ্রহ রিপোর্ট';
+                    mainContent.innerHTML = renderCollectionReports();
+                    break;
+                case 'new-user':
+                    pageTitle.textContent = currentLang === 'en' ? 'New User' : 'নতুন ব্যবহারকারী';
+                    mainContent.innerHTML = renderNewUser();
+                    break;
+                case 'user-list':
+                    pageTitle.textContent = currentLang === 'en' ? 'User List' : 'ব্যবহারকারী তালিকা';
+                    mainContent.innerHTML = renderUserList();
+                    break;
+                case 'user-profile':
+                    pageTitle.textContent = currentLang === 'en' ? 'User Profile' : 'ব্যবহারকারী প্রোফাইল';
+                    mainContent.innerHTML = renderUserProfile();
+                    break;
+                case 'area':
+                    pageTitle.textContent = currentLang === 'en' ? 'Area' : 'এলাকা';
+                    mainContent.innerHTML = renderArea();
+                    break;
+                case 'new-customer':
+                    pageTitle.textContent = currentLang === 'en' ? 'New Customer' : 'নতুন গ্রাহক';
+                    mainContent.innerHTML = renderNewCustomer();
+                    break;
+                case 'customer-list':
+                    pageTitle.textContent = currentLang === 'en' ? 'Customer List' : 'গ্রাহক তালিকা';
+                    mainContent.innerHTML = renderCustomerList();
+                    break;
+                case 'customer-profile':
+                    pageTitle.textContent = currentLang === 'en' ? 'Customer Profile' : 'গ্রাহক প্রোফাইল';
+                    mainContent.innerHTML = renderCustomerProfile();
+                    break;
+                case 'share':
+                    pageTitle.textContent = currentLang === 'en' ? 'Share Account' : 'শেয়ার হিসাব';
+                    mainContent.innerHTML = renderShare();
+                    break;
+                case 'savings':
+                    pageTitle.textContent = currentLang === 'en' ? 'Savings Account' : 'সঞ্চয় হিসাব';
+                    mainContent.innerHTML = renderSavings();
+                    break;
+                case 'fixed-deposit':
+                    pageTitle.textContent = currentLang === 'en' ? 'Fixed Deposit' : 'ফিক্সড ডিপোজিট';
+                    mainContent.innerHTML = renderFixedDeposit();
+                    break;
+                case 'dps':
+                    pageTitle.textContent = currentLang === 'en' ? 'DPS' : 'ডিপিএস';
+                    mainContent.innerHTML = renderDPS();
+                    break;
+                case 'loan':
+                    pageTitle.textContent = currentLang === 'en' ? 'Loan' : 'ঋণ';
+                    mainContent.innerHTML = renderLoan();
+                    break;
+                case 'share-new':
+                    pageTitle.textContent = currentLang === 'en' ? 'New Share' : 'নতুন শেয়ার';
+                    mainContent.innerHTML = renderShareNew();
+                    break;
+                case 'share-account':
+                    pageTitle.textContent = currentLang === 'en' ? 'Share Account' : 'শেয়ার হিসাব';
+                    mainContent.innerHTML = renderShareAccount();
+                    break;
+                case 'savings-account':
+                    pageTitle.textContent = currentLang === 'en' ? 'Savings Account' : 'সঞ্চয় হিসাব';
+                    mainContent.innerHTML = renderSavingsAccount();
+                    break;
+                case 'fd-account':
+                    pageTitle.textContent = currentLang === 'en' ? 'Fixed Deposit Account' : 'ফিক্সড ডিপোজিট হিসাব';
+                    mainContent.innerHTML = renderFdAccount();
+                    break;
+                case 'dps-account':
+                    pageTitle.textContent = currentLang === 'en' ? 'DPS Account' : 'ডিপিএস হিসাব';
+                    mainContent.innerHTML = renderDpsAccount();
+                    break;
+                case 'loan-new':
+                    pageTitle.textContent = currentLang === 'en' ? 'New Loan' : 'নতুন ঋণ';
+                    mainContent.innerHTML = renderLoanNew();
+                    break;
+                case 'loan-form':
+                    pageTitle.textContent = currentLang === 'en' ? 'Loan Application' : 'ঋণ আবেদন';
+                    mainContent.innerHTML = renderLoanForm();
+                    break;
+                case 'loan-account':
+                    pageTitle.textContent = currentLang === 'en' ? 'Loan Account' : 'ঋণ হিসাব';
+                    mainContent.innerHTML = renderLoanAccount();
+                    break;
+                case 'logout':
+                    mainContent.innerHTML = renderLogin();
+                    break;
+                default:
+                    pageTitle.textContent = page.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    mainContent.innerHTML = renderPlaceholder(page);
+            }
+        }
+
+        function updateActiveMenu(page) {
+            document.querySelectorAll('.menu-item, .submenu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // ===== DASHBOARD =====
+        function renderDashboard() {
+            const totalCustomers = store.customers.length;
+            const activeCustomers = store.customers.slice(0, 10);
+            const availableBalance = 938577;
+            const businessCapital = 926097.52;
+
+            return `
+                <div class="grid-3">
+                    <!-- Overview Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="badge badge-cyan">${store.package.smsCredit} SMS Credit</span>
+                            <button class="btn btn-orange" onclick="navigateTo('reports')">Reports</button>
+                        </div>
+                        <div class="grid-2 mb-20">
+                            <div style="background: var(--primary); color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 12px;">Available Balance</div>
+                                <div style="font-size: 20px; font-weight: 700; margin-top: 5px;">৳${availableBalance.toLocaleString()}</div>
+                            </div>
+                            <div style="background: var(--light-gray); padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 12px;">Business Capital</div>
+                                <div style="font-size: 20px; font-weight: 700; margin-top: 5px;">৳${businessCapital.toLocaleString()}</div>
+                            </div>
+                        </div>
+                        <div class="mb-10">
+                            <span class="badge badge-green">Total Customers: ${totalCustomers}</span>
+                            <span style="margin-left: 10px; font-weight: 600;">Active Customers</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0;">
+                            ${activeCustomers.map(c => `
+                                <div style="min-width: 120px; text-align: center;">
+                                    <div class="avatar avatar-lg" style="margin: 0 auto 5px;">${c.nameEn.charAt(0)}</div>
+                                    <div style="font-size: 12px; font-weight: 600;">${c.nameEn}</div>
+                                    <div style="font-size: 11px; color: var(--text-light);">${c.mobile}</div>
+                                    <button class="btn btn-primary btn-sm" style="margin-top: 5px; font-size: 11px; padding: 4px 8px;" onclick="viewCustomer(${c.id})">Profile</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Employee Reports -->
+                    <div class="card">
+                        <div class="card-title mb-10">Employee Reports</div>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            ${store.users.map(u => `
+                                <div class="transaction-item">
+                                    <div class="avatar avatar-sm">${u.nameEn.charAt(0)}</div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; font-size: 14px;">${u.nameEn}</div>
+                                        <div style="font-size: 12px; color: var(--text-light);">${u.role}</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-weight: 600;">৳0.00</div>
+                                        <div style="font-size: 11px; color: var(--text-light);">Collection</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Latest Transactions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Latest Transactions</span>
+                            <button class="btn btn-orange">View All</button>
+                        </div>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            ${store.transactions.slice(0, 10).map(t => {
+                                const customer = store.customers.find(c => c.id === t.customerId);
+                                return `
+                                    <div class="transaction-item">
+                                        <div class="avatar avatar-sm">${customer.nameEn.charAt(0)}</div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; font-size: 14px;">${customer.nameEn}</div>
+                                            <div style="font-size: 12px; color: var(--text-light);">${new Date(t.date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                            <div style="font-size: 12px; color: var(--text-light);">${t.type}</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-weight: 600; color: ${t.isCredit ? 'var(--green)' : 'var(--red)'};">
+                                                <span class="transaction-dot ${t.isCredit ? 'credit' : 'debit'}" style="display: inline-block; margin-right: 5px;"></span>
+                                                ৳${t.amount.toLocaleString()}
+                                            </div>
+                                            <div style="font-size: 11px; color: var(--text-light);">Verified by ${t.approvedBy}</div>
+                                        </div>
+                                        <div>▸</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Report -->
+                <div class="card">
+                    <div class="card-title mb-10">Today's Report</div>
+                    <div class="grid-6">
+                        <div class="stat-tile cyan">
+                            <div class="stat-label">Receipt</div>
+                            <div class="stat-value" style="color: var(--cyan);">৳0</div>
+                        </div>
+                        <div class="stat-tile orange">
+                            <div class="stat-label">Disbursement</div>
+                            <div class="stat-value" style="color: var(--orange);">৳0</div>
+                        </div>
+                        <div class="stat-tile red">
+                            <div class="stat-label">Expense</div>
+                            <div class="stat-value" style="color: var(--red);">৳0</div>
+                        </div>
+                        <div class="stat-tile green">
+                            <div class="stat-label">Profit</div>
+                            <div class="stat-value" style="color: var(--green);">৳0</div>
+                        </div>
+                        <div class="stat-tile pink">
+                            <div class="stat-label">Fine</div>
+                            <div class="stat-value" style="color: var(--pink);">৳0</div>
+                        </div>
+                        <div class="stat-tile blue">
+                            <div class="stat-label">Total Cash</div>
+                            <div class="stat-value" style="color: var(--blue);">৳0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row -->
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="card-title mb-10">Customer Report</div>
+                        <div style="font-size: 14px; line-height: 2;">
+                            <div>Total Customers: <strong>${totalCustomers}</strong></div>
+                            <div>Delete Pending: <strong>2</strong></div>
+                            <div>Total Shares: <strong>3</strong></div>
+                            <div>Total Savings: <strong>52</strong></div>
+                            <div>Fixed Deposit: <strong>4</strong></div>
+                            <div>DPS: <strong>6</strong></div>
+                            <div>Loans Disbursed: <strong>7</strong></div>
+                            <div>Insurance: <strong>3</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title mb-10">Package Report</div>
+                        <div style="font-size: 14px; line-height: 2;">
+                            <div>Package Name: <strong>${store.package.name}</strong></div>
+                            <div>Customer Permission: <strong>${store.package.customerPermission}</strong></div>
+                            <div>Expires on: <strong>${new Date(store.package.expiresOn).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></div>
+                            <div>SMS Credit: <strong>${store.package.smsCredit}</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title mb-10">User's Report</div>
+                        <div style="font-size: 14px; line-height: 2;">
+                            <div>Total Users: <strong>${store.users.length}</strong></div>
+                            <div>Investors: <strong>${store.users.filter(u => u.role === 'Investor').length}</strong></div>
+                            <div>Managers: <strong>${store.users.filter(u => u.role === 'Manager').length}</strong></div>
+                            <div>Field Workers: <strong>${store.users.filter(u => u.role === 'Field Worker').length}</strong></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== REPORTS =====
+        function renderReports() {
+            return `
+                <div class="grid-2">
+                    <div class="card" style="cursor: pointer; padding: 40px; text-align: center;" onclick="navigateTo('settlement-reports')">
+                        <h2 style="margin-bottom: 10px;">Settlement Reports</h2>
+                        <p style="color: var(--text-light);">Capital, Savings & Disbursement</p>
+                    </div>
+                    <div class="card" style="cursor: pointer; padding: 40px; text-align: center;" onclick="navigateTo('collection-reports')">
+                        <h2 style="margin-bottom: 10px;">Collection Reports</h2>
+                        <p style="color: var(--text-light);">Collection-Payment, Income-Expense</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSettlementReports() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <button class="btn btn-orange" onclick="window.print()">Print</button>
+                    </div>
+                    <div class="grid-3">
+                        <div class="stat-tile" style="border-color: var(--primary);">
+                            <div style="font-size: 32px;">👥</div>
+                            <div class="stat-value">৳926,097.52</div>
+                            <div class="stat-label">Owners' Share</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--cyan);">
+                            <div style="font-size: 32px;">📊</div>
+                            <div class="stat-value">৳30,500</div>
+                            <div class="stat-label">Customer Share</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--green);">
+                            <div style="font-size: 32px;">💰</div>
+                            <div class="stat-value">৳37,073</div>
+                            <div class="stat-label">Customer Savings</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--orange);">
+                            <div style="font-size: 32px;">🏦</div>
+                            <div class="stat-value">৳132,000</div>
+                            <div class="stat-label">Fixed Deposit</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--pink);">
+                            <div style="font-size: 32px;">📈</div>
+                            <div class="stat-value">৳2,900</div>
+                            <div class="stat-label">Customer DPS</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--red);">
+                            <div style="font-size: 32px;">🛡️</div>
+                            <div class="stat-value">৳3,400</div>
+                            <div class="stat-label">Insurance</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--blue);">
+                            <div style="font-size: 32px;">💳</div>
+                            <div class="stat-value">৳298,739</div>
+                            <div class="stat-label">Customer Loan</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--primary);">
+                            <div style="font-size: 32px;">🏛️</div>
+                            <div class="stat-value">৳500</div>
+                            <div class="stat-label">Bank Deposit</div>
+                        </div>
+                        <div class="stat-tile" style="border-color: var(--green); background: var(--light-gray);">
+                            <div style="font-size: 32px;">💵</div>
+                            <div class="stat-value">৳938,577</div>
+                            <div class="stat-label">Total Cash Including Profit</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCollectionReports() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <button class="btn btn-orange">Print</button>
+                        <button class="btn btn-cyan">Search</button>
+                    </div>
+                    <div class="mb-20">
+                        <h3 style="margin-bottom: 10px;">Transaction Summary</h3>
+                        <div class="grid-3">
+                            <div class="stat-tile cyan">
+                                <div class="stat-label">Transaction</div>
+                                <div class="stat-value">৳0</div>
+                            </div>
+                            <div class="stat-tile green">
+                                <div class="stat-label">Collection</div>
+                                <div class="stat-value">৳0</div>
+                            </div>
+                            <div class="stat-tile orange">
+                                <div class="stat-label">Disbursement</div>
+                                <div class="stat-value">৳0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 style="margin-bottom: 10px;">Collection Reports</h3>
+                    <div class="grid-3">
+                        <div class="stat-tile" style="border-color: var(--cyan);"><div class="stat-label">Share Deposit</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--orange);"><div class="stat-label">Fixed Deposit</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--green);"><div class="stat-label">Profit</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--cyan);"><div class="stat-label">Share Withdrawal</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--orange);"><div class="stat-label">Deposit Withdrawal</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--red);"><div class="stat-label">Expense</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--green);"><div class="stat-label">Savings Deposit</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--pink);"><div class="stat-label">DPS Deposit</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--blue);"><div class="stat-label">Other Income</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--green);"><div class="stat-label">Savings Withdrawal</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--pink);"><div class="stat-label">DPS Withdrawal</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--orange);"><div class="stat-label">Salary Payment</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--orange);"><div class="stat-label">Loan Disbursement</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--red);"><div class="stat-label">Insurance Deposit</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--blue);"><div class="stat-label">Bank Deposit</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--cyan);"><div class="stat-label">Loan Collection</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--red);"><div class="stat-label">Insurance Withdrawal</div><div class="stat-value">৳0</div></div>
+                        <div class="stat-tile" style="border-color: var(--orange);"><div class="stat-label">Bank Withdrawal</div><div class="stat-value">৳0</div></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== USER PAGES =====
+        function renderNewUser() {
+            return `
+                <div class="card">
+                    <h2 class="mb-20">New User</h2>
+                    <form id="newUserForm">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Name (English)</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Name (Bengali)</label>
+                                <input type="text" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Father</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mother</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mobile</label>
+                                <input type="text" class="form-input" placeholder="01XXXXXXXXX" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select class="form-input" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Designation</label>
+                                <select class="form-input" required>
+                                    <option value="">Select Designation</option>
+                                    <option value="Investor">Investor</option>
+                                    <option value="Manager">Manager</option>
+                                    <option value="Field Worker">Field Worker</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Address</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Permanent Address</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Joining Date</label>
+                                <input type="date" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="text" class="form-input" value="1234" required>
+                            </div>
+                        </div>
+                        <div class="text-right mt-20">
+                            <button type="submit" class="btn btn-cyan">Save</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function renderUserList() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All Users</h2>
+                    </div>
+                    <div class="flex gap-10 mb-20">
+                        <input type="text" class="form-input" placeholder="Type here.." style="max-width: 300px;">
+                        <button class="btn btn-green">Search</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Mobile</th>
+                                    <th>Joining Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${store.users.map((u, idx) => `
+                                    <tr style="cursor: pointer;" onclick="viewUser(${u.id})">
+                                        <td>
+                                            <div class="flex gap-10">
+                                                <div class="avatar avatar-sm">${u.nameEn.charAt(0)}</div>
+                                                <div>
+                                                    <div style="font-weight: 600;">${u.nameEn}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>${u.role}</td>
+                                        <td>Mobile: ${u.mobile}</td>
+                                        <td>Joining Date: ${new Date(u.joiningDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
+                                        <td>
+                                            <button class="btn btn-red btn-sm" onclick="event.stopPropagation(); deleteUser(${u.id})" style="padding: 4px 8px; font-size: 12px;">🗑️</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUserProfile() {
+            const user = store.users[0]; // Default to first user for demo
+            return `
+                <div class="grid-2">
+                    <div>
+                        <div class="card text-center">
+                            <div class="avatar avatar-lg" style="margin: 0 auto 10px;">${user.nameEn.charAt(0)}</div>
+                            <h2>${user.nameEn}</h2>
+                            <p style="color: var(--text-light); margin-bottom: 10px;">${user.role}</p>
+                            ${user.role === 'Investor' ? `<p><strong>Investment Amount: ৳${user.investment.toLocaleString()}</strong></p>` : ''}
+                            ${user.role === 'Field Worker' ? `<p><strong>Area: ${user.area || 'N/A'} ✎</strong></p>` : ''}
+                        </div>
+                        <div class="card mt-20">
+                            <h3 class="mb-10">User Information</h3>
+                            ${user.role === 'Investor' ? `
+                                <div class="flex gap-10 mb-20">
+                                    <button class="btn btn-green">Deposit</button>
+                                    <button class="btn btn-red">Withdraw</button>
+                                </div>
+                            ` : ''}
+                            <div style="line-height: 2.5;">
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Name (English)</span>
+                                    <strong>${user.nameEn} ✎</strong>
+                                </div>
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Mobile</span>
+                                    <strong>${user.mobile} ✎</strong>
+                                </div>
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Joining Date</span>
+                                    <strong>${new Date(user.joiningDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })} ✎</strong>
+                                </div>
+                            </div>
+                            <button class="btn btn-cyan" style="width: 100%; margin-top: 15px;">Change Password</button>
+                            <div class="mt-20" style="background: var(--light-gray); padding: 15px; border-radius: 8px;">
+                                <div style="margin-bottom: 10px;"><strong>Permanent Address:</strong> Dhaka, Bangladesh</div>
+                                <div><strong>Current Address:</strong> Dhaka, Bangladesh</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="mb-10">Latest Transactions</h3>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            ${store.transactions.slice(0, 5).map(t => {
+                                const customer = store.customers.find(c => c.id === t.customerId);
+                                return `
+                                    <div class="transaction-item">
+                                        <div>
+                                            <div style="font-size: 12px; color: var(--text-light);">${new Date(t.date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                            <div style="font-size: 13px;">${t.type}</div>
+                                        </div>
+                                        <div style="margin-left: auto; font-weight: 600; color: ${t.isCredit ? 'var(--green)' : 'var(--red)'};">
+                                            <span class="transaction-dot ${t.isCredit ? 'credit' : 'debit'}" style="display: inline-block; margin-right: 5px;"></span>
+                                            ৳${t.amount.toLocaleString()}
+                                        </div>
+                                        <div style="font-size: 11px; color: var(--text-light); margin-left: 10px;">${t.approvedBy}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <a href="#" style="color: var(--cyan); display: block; text-align: center; margin-top: 15px;">See more..</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== AREA PAGE =====
+        function renderArea() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Areas</h2>
+                        <button class="btn btn-cyan" onclick="showAddAreaModal()">+ New Area</button>
+                    </div>
+                    <div class="mb-20">
+                        <input type="text" class="form-input" placeholder="Search area..." style="max-width: 300px;">
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Area Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${store.areas.map((area, idx) => `
+                                    <tr>
+                                        <td>${idx + 1}.</td>
+                                        <td>${area.name}</td>
+                                        <td>
+                                            <button class="btn btn-cyan btn-sm" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;">Edit</button>
+                                            <button class="btn btn-red btn-sm" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== CUSTOMER PAGES =====
+        function renderNewCustomer() {
+            return `
+                <div class="card">
+                    <h2 class="mb-20">Customer Information</h2>
+                    <form id="newCustomerForm">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Name (English)</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Name (Bengali)</label>
+                                <input type="text" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Father</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mother</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mobile</label>
+                                <input type="text" class="form-input" placeholder="01XXXXXXXXX" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select class="form-input" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Area</label>
+                                <select class="form-input" required>
+                                    <option value="">Select Area</option>
+                                    ${store.areas.map(a => `<option value="${a.name}">${a.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Address</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Permanent Address</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Registration Date</label>
+                                <input type="date" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Account No</label>
+                                <input type="text" class="form-input" value="AC${1000 + store.customers.length + 1}" readonly style="background: var(--light-gray);">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="text" class="form-input" value="1234" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Admission Fee</label>
+                                <input type="number" class="form-input" value="0.00" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="text-right mt-20">
+                            <button type="submit" class="btn btn-cyan">Save</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function renderCustomerList() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Customer List</h2>
+                    </div>
+                    <div class="flex-between mb-20">
+                        <div class="flex gap-10">
+                            <label>Show</label>
+                            <select class="form-input" style="width: 80px;">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <label>entries</label>
+                        </div>
+                        <div class="flex gap-10">
+                            <label>Search:</label>
+                            <input type="text" class="form-input" style="width: 200px;" id="customerSearch" onkeyup="filterCustomers()">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="customerTable">
+                            <thead>
+                                <tr>
+                                    <th style="cursor: pointer;" onclick="sortCustomers('name')">Name ↕</th>
+                                    <th style="cursor: pointer;" onclick="sortCustomers('mobile')">Mobile ↕</th>
+                                    <th style="cursor: pointer;" onclick="sortCustomers('area')">Area ↕</th>
+                                    <th style="cursor: pointer;" onclick="sortCustomers('accountNo')">AC No ↕</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customerTableBody">
+                                ${store.customers.slice(0, 10).map(c => `
+                                    <tr style="cursor: pointer;" onclick="viewCustomer(${c.id})">
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 8px;"></span>${c.nameEn}</td>
+                                        <td>${c.mobile}</td>
+                                        <td>${c.area}</td>
+                                        <td>${c.accountNo}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex-between mt-20">
+                        <div>Showing 1 to 10 of ${store.customers.length} entries</div>
+                        <div class="flex gap-10">
+                            <button class="btn btn-primary" disabled>«</button>
+                            <button class="btn btn-primary">1</button>
+                            <button class="btn btn-primary">2</button>
+                            <button class="btn btn-primary">3</button>
+                            <button class="btn btn-primary">4</button>
+                            <button class="btn btn-primary">5</button>
+                            <button class="btn btn-primary">6</button>
+                            <button class="btn btn-primary">»</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCustomerProfile() {
+            const customer = store.customers[0]; // Default to first customer for demo
+            return `
+                <div class="grid-3">
+                    <div>
+                        <div class="card text-center">
+                            <div class="avatar avatar-lg" style="margin: 0 auto 10px;">${customer.nameEn.charAt(0)}</div>
+                            <h2>${customer.nameEn}</h2>
+                            <p style="color: var(--text-light);">Area: ${customer.area} ✎</p>
+                            <p style="color: var(--text-light);">Account No: ${customer.accountNo} ✎</p>
+                            <div class="flex gap-10 mt-20" style="justify-content: center;">
+                                <button class="btn btn-cyan">Download Info</button>
+                                <button class="btn btn-orange">Registration Form</button>
+                                <button class="btn btn-red">Delete</button>
+                            </div>
+                        </div>
+                        <div class="card mt-20">
+                            <div class="card-header">
+                                <h3>Customer Information</h3>
+                                <button class="btn btn-primary">Password</button>
+                            </div>
+                            <div style="line-height: 2.5;">
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Name (English)</span>
+                                    <strong>${customer.nameEn} ✎</strong>
+                                </div>
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Mobile</span>
+                                    <strong>${customer.mobile} ✎</strong>
+                                </div>
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Email</span>
+                                    <strong>${customer.email || '<span style="color: var(--text-light);">No information..</span>'} ✎</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card">
+                            <h3 class="mb-10">Nominee Information</h3>
+                            <div style="line-height: 2.5;">
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Name (English)</span>
+                                    <strong style="color: var(--text-light);">No information.. ✎</strong>
+                                </div>
+                                <div class="flex-between" style="border-bottom: 1px solid var(--border); padding: 5px 0;">
+                                    <span>Relationship</span>
+                                    <strong style="color: var(--text-light);">No information.. ✎</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-20">
+                            <h3 class="mb-10">Other Documents</h3>
+                            <div style="line-height: 2;">
+                                <a href="#" style="color: var(--cyan);">Customer Document File</a><br>
+                                <a href="#" style="color: var(--cyan);">Nominee Document File</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card">
+                            <h3 class="mb-10">Share - 1</h3>
+                            <table style="font-size: 13px;">
+                                <tr><td>Registration Date</td><td>${customer.registrationDate}</td></tr>
+                                <tr><td>Balance</td><td>৳0</td></tr>
+                                <tr style="font-weight: 600;"><td>Total</td><td>৳0</td></tr>
+                            </table>
+                        </div>
+                        <div class="card">
+                            <h3 class="mb-10">Savings - 1</h3>
+                            <table style="font-size: 13px;">
+                                <tr><td>Registration Date</td><td>${customer.registrationDate}</td></tr>
+                                <tr><td>Balance</td><td>৳0</td></tr>
+                                <tr style="font-weight: 600;"><td>Total</td><td>৳0</td></tr>
+                            </table>
+                        </div>
+                        <div class="card">
+                            <h3 class="mb-10">Fixed Deposit - 1</h3>
+                            <table style="font-size: 13px;">
+                                <tr><td>Registration Date</td><td>${customer.registrationDate}</td></tr>
+                                <tr><td>Balance</td><td>৳0</td></tr>
+                                <tr style="font-weight: 600;"><td>Total</td><td>৳0</td></tr>
+                            </table>
+                        </div>
+                        <div class="card">
+                            <h3 class="mb-10">DPS - 1</h3>
+                            <table style="font-size: 13px;">
+                                <tr><td>Registration Date</td><td>${customer.registrationDate}</td></tr>
+                                <tr><td>Balance</td><td>৳0</td></tr>
+                                <tr style="font-weight: 600;"><td>Total</td><td>৳0</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== ACCOUNT PAGES =====
+        function renderShare() {
+            const shareCustomers = store.customers.slice(0, 6);
+            return `
+                <div class="flex gap-10 mb-20">
+                    <button class="btn btn-primary" onclick="navigateTo('share-new')">New Share ▾</button>
+                    <button class="btn btn-orange" onclick="navigateTo('share-find')">Find Customer ▾</button>
+                </div>
+                <div class="card">
+                    <h2 class="mb-20">Share Customers</h2>
+                    <div class="grid-3">
+                        ${shareCustomers.map(c => `
+                            <div class="card" style="cursor: pointer; text-align: center;" onclick="navigateTo('share-account')">
+                                <div class="avatar avatar-lg" style="margin: 0 auto 10px;">${c.nameEn.charAt(0)}</div>
+                                <h3>${c.nameEn}</h3>
+                                <p style="color: var(--text-light); font-size: 13px;">Account No: ${c.accountNo}</p>
+                                <p style="font-weight: 600; margin-top: 5px;">Balance: ৳0</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderShareNew() {
+            return `
+                <div class="card">
+                    <h2 class="mb-20">All Customers</h2>
+                    <div class="flex gap-10 mb-20">
+                        <input type="text" class="form-input" placeholder="Search Customer" style="max-width: 300px;">
+                        <button class="btn btn-green">Search</button>
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <div class="card">
+                                <div class="flex gap-10 mb-10">
+                                    <div class="avatar avatar-lg">JD</div>
+                                    <div>
+                                        <h3>Abdul Mannan</h3>
+                                        <p style="color: var(--text-light); font-size: 13px;">Area: Gulshan - 01</p>
+                                        <p style="color: var(--text-light); font-size: 13px;">Number of Shares: 0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h3 class="mb-10">Customer Information</h3>
+                                <div style="font-size: 13px; line-height: 2;">
+                                    <div><strong>Name:</strong> Abdul Mannan</div>
+                                    <div><strong>Mobile:</strong> 01712345678</div>
+                                    <div><strong>Area:</strong> Gulshan - 01</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card">
+                                <h3 class="mb-10">Current Share / Latest Transactions</h3>
+                                <p style="color: var(--text-light); text-align: center; padding: 20px;">No records found</p>
+                            </div>
+                            <button class="btn btn-green" style="width: 100%;" onclick="showNewShareModal()">New Share</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderShareAccount() {
+            return `
+                <div class="grid-2">
+                    <div>
+                        <div class="card">
+                            <div class="flex gap-10 mb-20">
+                                <div class="avatar avatar-lg">AM</div>
+                                <div>
+                                    <h3>Abdul Mannan</h3>
+                                    <p style="color: var(--text-light);">Area: Gulshan - 01</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-10 mb-20">
+                                <button class="btn btn-green" onclick="showDepositModal()">Deposit</button>
+                                <button class="btn btn-red" onclick="showWithdrawModal()">Withdraw</button>
+                            </div>
+                            <h3 class="mb-10">Share Details</h3>
+                            <table style="font-size: 14px; line-height: 2;">
+                                <tr><td><strong>Share Amount</strong></td><td>৳20,000</td></tr>
+                                <tr><td><strong>Duration</strong></td><td>12 Months</td></tr>
+                                <tr><td><strong>Profit</strong></td><td>5%</td></tr>
+                                <tr><td><strong>Registration Date</strong></td><td>15 January, 2024</td></tr>
+                                <tr><td><strong>Time Elapsed</strong></td><td>13 Months</td></tr>
+                                <tr><td><strong>Last Transaction</strong></td><td>16 February, 2025</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Share Transactions</h3>
+                            <button class="btn btn-orange">Search</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Type</th>
+                                        <th>Transaction Date</th>
+                                        <th>Amount</th>
+                                        <th>Current Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>New Share</td>
+                                        <td>15 January, 2024</td>
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 5px;"></span>৳20,000</td>
+                                        <td>৳20,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSavings() {
+            const savingsCustomers = store.customers.slice(0, 8);
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h2>New Savings</h2>
+                        <button class="btn btn-cyan">Search Customer</button>
+                    </div>
+                    <div class="grid-2">
+                        ${savingsCustomers.map(c => `
+                            <div class="card" style="cursor: pointer;" onclick="navigateTo('savings-account')">
+                                <div class="flex gap-10">
+                                    <div class="avatar">${c.nameEn.charAt(0)}</div>
+                                    <div>
+                                        <h3>${c.nameEn}</h3>
+                                        <p style="font-size: 13px; color: var(--text-light);">Mobile: ${c.mobile}</p>
+                                        <p style="font-size: 13px; color: var(--text-light);">Area: ${c.area}</p>
+                                        <p style="font-size: 13px; color: var(--text-light);">Account No: ${c.accountNo}</p>
+                                        <p style="font-weight: 600; margin-top: 5px;">Savings Amount: ৳0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSavingsAccount() {
+            return `
+                <div class="grid-2">
+                    <div>
+                        <div class="card">
+                            <div class="flex gap-10 mb-20">
+                                <div class="avatar avatar-lg">RA</div>
+                                <div>
+                                    <h3>Rashida Begum</h3>
+                                    <p style="color: var(--text-light);">Area: Gulshan - 02</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-10 mb-20">
+                                <button class="btn btn-green" onclick="showDepositModal()">Deposit</button>
+                                <button class="btn btn-red" onclick="showWithdrawModal()">Withdraw</button>
+                            </div>
+                            <h3 class="mb-10">Savings Details</h3>
+                            <table style="font-size: 14px; line-height: 2;">
+                                <tr><td><strong>Savings Amount</strong></td><td>৳10,000</td></tr>
+                                <tr><td><strong>Profit</strong></td><td>4%</td></tr>
+                                <tr><td><strong>Registration Date</strong></td><td>20 January, 2024</td></tr>
+                                <tr><td><strong>Last Transaction</strong></td><td>16 February, 2025</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Savings Transactions</h3>
+                            <button class="btn btn-orange">Search</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Type</th>
+                                        <th>Transaction Date</th>
+                                        <th>Amount</th>
+                                        <th>Current Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Deposit</td>
+                                        <td>20 January, 2024</td>
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 5px;"></span>৳10,000</td>
+                                        <td>৳10,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFixedDeposit() {
+            const fdCustomers = store.customers.slice(0, 4);
+            return `
+                <div class="flex gap-10 mb-20">
+                    <button class="btn btn-primary">New Deposit ▾</button>
+                    <button class="btn btn-orange">Find Customer ▾</button>
+                </div>
+                <div class="card">
+                    <h2 class="mb-20">Fixed Deposit List</h2>
+                    <div class="grid-3">
+                        ${fdCustomers.map(c => `
+                            <div class="card" style="cursor: pointer; text-align: center;" onclick="navigateTo('fd-account')">
+                                <div class="avatar avatar-lg" style="margin: 0 auto 10px;">${c.nameEn.charAt(0)}</div>
+                                <h3>${c.nameEn}</h3>
+                                <p style="color: var(--text-light); font-size: 13px;">Account No: ${c.accountNo}</p>
+                                <p style="font-weight: 600; margin-top: 5px;">Balance: ৳33,000</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFdAccount() {
+            return `
+                <div class="grid-2">
+                    <div>
+                        <div class="card">
+                            <div class="flex gap-10 mb-20">
+                                <div class="avatar avatar-lg">MA</div>
+                                <div>
+                                    <h3>Mohammad Ali</h3>
+                                    <p style="color: var(--text-light);">Area: Gulshan - 01</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-10 mb-20">
+                                <button class="btn btn-green" onclick="showDepositModal()">Deposit</button>
+                                <button class="btn btn-red" onclick="showWithdrawModal()">Withdraw</button>
+                            </div>
+                            <h3 class="mb-10">Fixed Deposit Details</h3>
+                            <table style="font-size: 14px; line-height: 2;">
+                                <tr><td><strong>Deposit Amount</strong></td><td>৳33,000</td></tr>
+                                <tr><td><strong>Duration</strong></td><td>24 Months</td></tr>
+                                <tr><td><strong>Profit</strong></td><td>8%</td></tr>
+                                <tr><td><strong>Registration Date</strong></td><td>10 March, 2024</td></tr>
+                                <tr><td><strong>Last Transaction</strong></td><td>16 February, 2025</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Fixed Deposit Transactions</h3>
+                            <button class="btn btn-orange">Search</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Type</th>
+                                        <th>Transaction Date</th>
+                                        <th>Amount</th>
+                                        <th>Current Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>New Deposit</td>
+                                        <td>10 March, 2024</td>
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 5px;"></span>৳33,000</td>
+                                        <td>৳33,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDPS() {
+            const dpsCustomers = store.customers.slice(0, 6);
+            return `
+                <div class="flex gap-10 mb-20">
+                    <button class="btn btn-primary">New DPS ▾</button>
+                    <button class="btn btn-orange">Find Customer ▾</button>
+                </div>
+                <div class="card">
+                    <h2 class="mb-20">DPS Customers</h2>
+                    <div class="grid-3">
+                        ${dpsCustomers.map(c => `
+                            <div class="card" style="cursor: pointer; text-align: center;" onclick="navigateTo('dps-account')">
+                                <div class="avatar avatar-lg" style="margin: 0 auto 10px;">${c.nameEn.charAt(0)}</div>
+                                <h3>${c.nameEn}</h3>
+                                <p style="color: var(--text-light); font-size: 13px;">Account No: ${c.accountNo}</p>
+                                <p style="font-weight: 600; margin-top: 5px;">Balance: ৳483.33</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDpsAccount() {
+            return `
+                <div class="grid-2">
+                    <div>
+                        <div class="card">
+                            <div class="flex gap-10 mb-20">
+                                <div class="avatar avatar-lg">FK</div>
+                                <div>
+                                    <h3>Fatema Khatun</h3>
+                                    <p style="color: var(--text-light);">Area: Gulshan - 02</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-10 mb-20">
+                                <button class="btn btn-green" onclick="showDepositModal()">Deposit</button>
+                                <button class="btn btn-red" onclick="showWithdrawModal()">Withdraw</button>
+                            </div>
+                            <h3 class="mb-10">DPS Details</h3>
+                            <table style="font-size: 14px; line-height: 2;">
+                                <tr><td><strong>DPS Amount</strong></td><td>৳500/month</td></tr>
+                                <tr><td><strong>Duration</strong></td><td>12 Months</td></tr>
+                                <tr><td><strong>Profit</strong></td><td>6%</td></tr>
+                                <tr><td><strong>Registration Date</strong></td><td>15 April, 2024</td></tr>
+                                <tr><td><strong>Last Transaction</strong></td><td>16 February, 2025</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>DPS Transactions</h3>
+                            <button class="btn btn-orange">Search</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Type</th>
+                                        <th>Transaction Date</th>
+                                        <th>Amount</th>
+                                        <th>Current Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Monthly Deposit</td>
+                                        <td>15 April, 2024</td>
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 5px;"></span>৳500</td>
+                                        <td>৳500</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLoan() {
+            const loanCustomers = store.customers.slice(0, 7);
+            return `
+                <div class="flex gap-10 mb-20" style="flex-wrap: wrap;">
+                    <button class="btn btn-green">Loan List ▾</button>
+                    <button class="btn btn-primary" onclick="navigateTo('loan-new')">New Loan ▾</button>
+                    <button class="btn btn-red">Overdue Loans</button>
+                    <button class="btn btn-green">Today's Collection</button>
+                    <button class="btn btn-orange">Expired Loans</button>
+                    <button class="btn btn-cyan">Completed Loans</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Loan Customers</h2>
+                        <div class="flex gap-10">
+                            <button class="btn btn-primary">All</button>
+                            <button class="btn btn-cyan">Daily</button>
+                            <button class="btn btn-orange">Weekly</button>
+                            <button class="btn btn-green">Monthly</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                    <th>Area</th>
+                                    <th>AC No</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${loanCustomers.map(c => `
+                                    <tr style="cursor: pointer;" onclick="navigateTo('loan-account')">
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 8px;"></span>${c.nameEn}</td>
+                                        <td>${c.mobile}</td>
+                                        <td>${c.area}</td>
+                                        <td>${c.accountNo}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLoanNew() {
+            return `
+                <div class="card">
+                    <h2 class="mb-20">All Customers</h2>
+                    <div class="flex-between mb-20">
+                        <div class="flex gap-10">
+                            <label>Show</label>
+                            <select class="form-input" style="width: 80px;">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <label>entries</label>
+                        </div>
+                        <div class="flex gap-10">
+                            <label>Search:</label>
+                            <input type="text" class="form-input" style="width: 200px;">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                    <th>Area</th>
+                                    <th>AC No</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${store.customers.slice(0, 10).map(c => `
+                                    <tr style="cursor: pointer;" onclick="navigateTo('loan-form')">
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 8px;"></span>${c.nameEn}</td>
+                                        <td>${c.mobile}</td>
+                                        <td>${c.area}</td>
+                                        <td>${c.accountNo}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex-between mt-20">
+                        <div>Showing 1 to 10 of 53 entries</div>
+                        <div class="flex gap-10">
+                            <button class="btn btn-primary">«</button>
+                            <button class="btn btn-primary">1</button>
+                            <button class="btn btn-primary">2</button>
+                            <button class="btn btn-primary">»</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLoanForm() {
+            return `
+                <div class="grid-2">
+                    <div>
+                        <div class="card">
+                            <div class="flex gap-10 mb-20">
+                                <div class="avatar avatar-lg">AM</div>
+                                <div>
+                                    <h3>Abdul Mannan</h3>
+                                    <p style="color: var(--text-light);">Area: Gulshan - 01</p>
+                                    <p style="font-weight: 600;">Loan: ৳0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-20">
+                            <div class="card-header">
+                                <h3>Loan Information</h3>
+                                <button class="btn btn-primary">New Loan</button>
+                            </div>
+                            <form id="loanForm">
+                                <div class="form-group">
+                                    <label class="form-label">Customer Name</label>
+                                    <input type="text" class="form-input" value="Abdul Mannan" readonly style="background: var(--light-gray);">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Loan Type</label>
+                                    <select class="form-input" required>
+                                        <option value="">Select loan type</option>
+                                        <option value="Daily">Daily</option>
+                                        <option value="Weekly">Weekly</option>
+                                        <option value="Monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label class="form-label">Loan Amount</label>
+                                        <input type="number" class="form-input" value="10000" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Savings</label>
+                                        <input type="number" class="form-input" value="2000" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Profit (%)</label>
+                                        <input type="number" class="form-input" value="10" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Number of Installments</label>
+                                        <input type="number" class="form-input" value="110" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date From</label>
+                                        <input type="date" class="form-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date To</label>
+                                        <input type="date" class="form-input" readonly style="background: var(--light-gray);">
+                                    </div>
+                                </div>
+                                <div class="mt-20" style="background: var(--light-gray); padding: 15px; border-radius: 8px;">
+                                    <div style="font-size: 14px; line-height: 2;">
+                                        <div><strong>Total Amount:</strong> ৳11,000</div>
+                                        <div><strong>Per Installment:</strong> ৳100</div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="mb-10">Customer Information</h3>
+                        <div style="font-size: 14px; line-height: 2;">
+                            <div><strong>Name:</strong> Abdul Mannan</div>
+                            <div><strong>Mobile:</strong> 01712345678</div>
+                            <div><strong>Area:</strong> Gulshan - 01</div>
+                            <div><strong>Account No:</strong> AC1001</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLoanAccount() {
+            return `
+                <div class="grid-2">
+                    <div>
+                        <div class="card">
+                            <div class="flex gap-10 mb-20">
+                                <div class="avatar avatar-lg">AM</div>
+                                <div>
+                                    <h3>Abdul Mannan</h3>
+                                    <p style="color: var(--text-light);">Area: Gulshan - 01</p>
+                                    <p style="font-weight: 600; color: var(--red);">Loan Due: ৳11,000.00</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-red mb-20">Renew Loan</button>
+                            <h3 class="mb-10">Current Loan</h3>
+                            <p style="font-weight: 600; margin-bottom: 10px;">Savings: ৳2,000.00</p>
+                            <table style="font-size: 14px; line-height: 2;">
+                                <tr><td><strong>Loan ID</strong></td><td>LN001</td></tr>
+                                <tr><td><strong>Loan Type</strong></td><td>Daily</td></tr>
+                                <tr><td><strong>Account No</strong></td><td>AC1001</td></tr>
+                                <tr><td><strong>Due Installments</strong></td><td style="color: var(--red);">110</td></tr>
+                                <tr><td><strong>Loan Amount</strong></td><td>৳11,000</td></tr>
+                                <tr><td><strong>Number of Installments</strong></td><td>110/110 ✎</td></tr>
+                                <tr><td><strong>Per Installment</strong></td><td>৳100</td></tr>
+                                <tr><td><strong>Loan Due</strong></td><td>৳11,000</td></tr>
+                                <tr><td><strong>Last Transaction</strong></td><td>16 February, 2025</td></tr>
+                                <tr><td><strong>Next Date</strong></td><td style="color: var(--pink);">17 February, 2025</td></tr>
+                                <tr><td><strong>Loan Period</strong></td><td>15 January, 2025 to 15 May, 2025</td></tr>
+                            </table>
+                            <div class="flex gap-10 mt-20">
+                                <button class="btn btn-green" onclick="showCollectModal()">Collect</button>
+                                <button class="btn btn-red" onclick="showSettleModal()">Settle Full Loan</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Loan Transactions</h3>
+                            <button class="btn btn-orange">Search</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Type</th>
+                                        <th>Transaction Date</th>
+                                        <th>Amount</th>
+                                        <th>Current Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>New Loan ✕</td>
+                                        <td>15 January, 2025</td>
+                                        <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 5px;"></span>৳11,000</td>
+                                        <td>৳11,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Installment Payment ✕</td>
+                                        <td>16 February, 2025</td>
+                                        <td><span class="transaction-dot debit" style="display: inline-block; margin-right: 5px;"></span>৳100</td>
+                                        <td>৳10,900</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== PLACEHOLDER PAGES =====
+        function renderPlaceholder(page) {
+            const title = page.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `
+                <div class="card text-center" style="padding: 60px 20px;">
+                    <h2 style="margin-bottom: 20px;">${title}</h2>
+                    <p style="color: var(--text-light); font-size: 16px;">This page is not included in the prototype</p>
+                </div>
+            `;
+        }
+
+        function renderLogin() {
+            return `
+                <div style="max-width: 400px; margin: 100px auto; padding: 40px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h2 class="text-center mb-20">Log In</h2>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label class="form-label">Mobile Number</label>
+                            <input type="text" class="form-input" placeholder="01XXXXXXXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" placeholder="Enter password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Log In</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function showModal(title, body) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = body;
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        function viewUser(id) {
+            navigateTo('user-profile');
+        }
+
+        function viewCustomer(id) {
+            navigateTo('customer-profile');
+        }
+
+        function deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                store.users = store.users.filter(u => u.id !== id);
+                renderUserList();
+                showToast('User deleted successfully');
+            }
+        }
+
+        function showAddAreaModal() {
+            showModal('Add New Area', `
+                <form onsubmit="addArea(event)">
+                    <div class="form-group">
+                        <label class="form-label">Area Name</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="flex gap-10 mt-20">
+                        <button type="button" class="btn btn-red" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-cyan">Save</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function addArea(e) {
+            e.preventDefault();
+            const input = e.target.querySelector('input');
+            store.areas.push({ id: store.areas.length + 1, name: input.value });
+            closeModal();
+            renderArea();
+            showToast('Area added successfully');
+        }
+
+        function showNewShareModal() {
+            showModal('New Share', `
+                <form onsubmit="addShare(event)">
+                    <div class="form-group">
+                        <label class="form-label">Share Amount</label>
+                        <input type="number" class="form-input" value="20000" required>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Duration</label>
+                            <input type="number" class="form-input" value="12" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Unit</label>
+                            <select class="form-input">
+                                <option value="Months">Months</option>
+                                <option value="Years">Years</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Profit (%)</label>
+                        <input type="number" class="form-input" value="0" step="0.01" required>
+                    </div>
+                    <div class="flex gap-10 mt-20">
+                        <button type="button" class="btn btn-red" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-cyan">Add</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function addShare(e) {
+            e.preventDefault();
+            closeModal();
+            showToast('Share added successfully');
+            navigateTo('share-account');
+        }
+
+        function showCollectModal() {
+            showModal('Collect Payment', `
+                <form onsubmit="collectPayment(event)">
+                    <div class="form-group">
+                        <label class="form-label">Select Date</label>
+                        <input type="datetime-local" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-input" value="100" required>
+                    </div>
+                    <p style="color: var(--red); font-size: 13px; margin: 10px 0;">Note: If no date is selected, today's date will be used.</p>
+                    <div class="flex gap-10 mt-20">
+                        <button type="button" class="btn btn-red" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-cyan">Collect</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function collectPayment(e) {
+            e.preventDefault();
+            closeModal();
+            showToast('Payment collected successfully');
+            renderLoanAccount();
+        }
+
+        function showSettleModal() {
+            showModal('Settle Full Loan', `
+                <form onsubmit="settleLoan(event)">
+                    <div class="form-group">
+                        <label class="form-label">Settlement Amount</label>
+                        <input type="number" class="form-input" value="11000" readonly style="background: var(--light-gray);">
+                    </div>
+                    <p style="color: var(--red); font-size: 13px; margin: 10px 0;">Are you sure you want to settle this loan completely?</p>
+                    <div class="flex gap-10 mt-20">
+                        <button type="button" class="btn btn-red" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-cyan">Settle</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function settleLoan(e) {
+            e.preventDefault();
+            closeModal();
+            showToast('Loan settled successfully');
+            navigateTo('loan');
+        }
+
+        function showDepositModal() {
+            showModal('Deposit', `
+                <form onsubmit="makeDeposit(event)">
+                    <div class="form-group">
+                        <label class="form-label">Select Date</label>
+                        <input type="datetime-local" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-input" required>
+                    </div>
+                    <p style="color: var(--red); font-size: 13px; margin: 10px 0;">Note: If no date is selected, today's date will be used.</p>
+                    <div class="flex gap-10 mt-20">
+                        <button type="button" class="btn btn-red" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-cyan">Deposit</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function makeDeposit(e) {
+            e.preventDefault();
+            closeModal();
+            showToast('Deposit successful');
+        }
+
+        function showWithdrawModal() {
+            showModal('Withdrawal', `
+                <form onsubmit="makeWithdrawal(event)">
+                    <div class="form-group">
+                        <label class="form-label">Select Date</label>
+                        <input type="datetime-local" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-input" required>
+                    </div>
+                    <p style="color: var(--red); font-size: 13px; margin: 10px 0;">Note: If no date is selected, today's date will be used.</p>
+                    <div class="flex gap-10 mt-20">
+                        <button type="button" class="btn btn-red" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-cyan">Withdraw</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function makeWithdrawal(e) {
+            e.preventDefault();
+            closeModal();
+            showToast('Withdrawal successful');
+        }
+
+        function filterCustomers() {
+            const search = document.getElementById('customerSearch').value.toLowerCase();
+            const filtered = store.customers.filter(c => 
+                c.nameEn.toLowerCase().includes(search) ||
+                c.mobile.includes(search) ||
+                c.area.toLowerCase().includes(search) ||
+                c.accountNo.toLowerCase().includes(search)
+            );
+            const tbody = document.getElementById('customerTableBody');
+            tbody.innerHTML = filtered.slice(0, 10).map(c => `
+                <tr style="cursor: pointer;" onclick="viewCustomer(${c.id})">
+                    <td><span class="transaction-dot credit" style="display: inline-block; margin-right: 8px;"></span>${c.nameEn}</td>
+                    <td>${c.mobile}</td>
+                    <td>${c.area}</td>
+                    <td>${c.accountNo}</td>
+                </tr>
+            `).join('');
+        }
+
+        function sortCustomers(field) {
+            // Simple sort implementation
+            store.customers.sort((a, b) => {
+                if (field === 'name') return a.nameEn.localeCompare(b.nameEn);
+                if (field === 'mobile') return a.mobile.localeCompare(b.mobile);
+                if (field === 'area') return a.area.localeCompare(b.area);
+                if (field === 'accountNo') return a.accountNo.localeCompare(b.accountNo);
+                return 0;
+            });
+            renderCustomerList();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            navigateTo('dashboard');
+            showToast('Logged in successfully');
+        }
+
+        function toggleAddDropdown() {
+            const dropdown = document.getElementById('addDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('addDropdown');
+            const addBtn = document.getElementById('addBtn');
+            if (dropdown && !dropdown.contains(e.target) && !addBtn.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // ===== EVENT LISTENERS =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sidebar menu interactions
+            document.querySelectorAll('.menu-item.has-submenu').forEach(item => {
+                item.addEventListener('click', () => {
+                    item.classList.toggle('expanded');
+                    const submenu = item.nextElementSibling;
+                    if (submenu && submenu.classList.contains('submenu')) {
+                        submenu.classList.toggle('show');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.menu-item:not(.has-submenu), .submenu-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const page = item.dataset.page;
+                    if (page) {
+                        navigateTo(page);
+                    }
+                });
+            });
+
+            // Hamburger menu
+            document.getElementById('hamburger').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+
+            // Modal close
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('modalOverlay').addEventListener('click', (e) => {
+                if (e.target.id === 'modalOverlay') closeModal();
+            });
+
+            // Language toggle
+            document.getElementById('langToggle').addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'bn' : 'en';
+                document.body.classList.toggle('bengali-mode', currentLang === 'bn');
+                document.querySelectorAll('[data-en]').forEach(el => {
+                    el.textContent = el.dataset[currentLang] || el.dataset.en;
+                });
+                handleRoute(); // Re-render current page
+            });
+
+            // Form submissions
+            document.addEventListener('submit', (e) => {
+                if (e.target.id === 'newUserForm') {
+                    e.preventDefault();
+                    showToast('User created successfully');
+                    navigateTo('user-list');
+                }
+                if (e.target.id === 'newCustomerForm') {
+                    e.preventDefault();
+                    showToast('Customer created successfully');
+                    navigateTo('customer-list');
+                }
+            });
+
+            // Initial route
+            handleRoute();
+        });
+    </script>
+</body>
+</html>
